@@ -23,10 +23,12 @@ import net.neoforged.fml.config.ModConfig
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
 import net.neoforged.neoforge.common.NeoForge
+import net.neoforged.neoforge.data.event.GatherDataEvent
 import net.neoforged.neoforge.event.server.ServerStartingEvent
 import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
 import org.eln.eln3.compat.TopCompat
+import org.eln.eln3.datagen.ObjBlockStateProvider
 import org.eln.eln3.registry.ElnBlockEntities
 import org.eln.eln3.registry.ElnBlockEntities.SIMPLE_TEST_BLOCK_ITEM
 import org.eln.eln3.registry.ElnBlocks
@@ -77,7 +79,18 @@ class Eln3
                 LOGGER.info("HELLO FROM CLIENT SETUP")
                 LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().user.name)
             }
+
+            @SubscribeEvent
+            fun gatherData(event: GatherDataEvent) {
+                val generator = event.generator
+                val output = generator.packOutput
+                val existingFileHelper = event.existingFileHelper
+
+                LOGGER.info("DATA GEN")
+                generator.addProvider(event.includeClient(), ObjBlockStateProvider(output, existingFileHelper))
+            }
         }
+
     }
 
     init {
